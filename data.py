@@ -3,7 +3,7 @@
 
 # python -m pip install mysql-connector-python
 import requests
-# import mysql.connector
+import mysql.connector
 # from bs4 import BeautifulSoup
 # r = requests.get(URL)
 # 'pip install html5lib --user' - Specifying the HTML parser we want to use
@@ -70,18 +70,21 @@ for i in range(len(video_url)):
     wait = WebDriverWait(driver, 30)
     title2 = wait.until(expected_conditions.element_to_be_clickable(
         (By.CSS_SELECTOR, 'h1.ytd-video-primary-info-renderer yt-formatted-string')))
-    print("Title : " + title2.text)
+    # print("Title : " + title2.text)
 
     video_views_count = wait.until(expected_conditions.element_to_be_clickable(
         (By.CSS_SELECTOR, '#count > ytd-video-view-count-renderer > span.view-count.style-scope.ytd-video-view-count-renderer')))
 
-    video_likes_count = wait.until(expected_conditions.element_to_be_clickable(
-        (By.CSS_SELECTOR, '#top-level-buttons-computed > a.yt-simple-endpoint.style-scope.ytd-toggle-button-renderer > yt-formatted-string')))
+    # video_likes_count = wait.until(expected_conditions.element_to_be_clickable(
+    #     (By.CSS_SELECTOR, 'top-level-buttons ytd-menu-renderer ytd-toggle-button-renderer yt-formatted-string')))
 
-    video_dislikes_count = wait.until(expected_conditions.element_to_be_clickable(
-        (By.CSS_SELECTOR, '#top-level-buttons-computed > a.yt-simple-endpoint.style-scope.ytd-toggle-button-renderer > yt-formatted-string')))
+    # video_dislikes_count = wait.until(expected_conditions.element_to_be_clickable(
+    #     (By.CSS_SELECTOR, '#top-level-buttons-computed > a.yt-simple-endpoint.style-scope.ytd-toggle-button-renderer > yt-formatted-string')))
 
-    print("dislikes Count :" + video_dislikes_count.text)
+    # video_likes_count = driver.find_elements_by_css_selector(
+    #     'top-level-buttons ytd-menu-renderer ytd-toggle-button-renderer yt-formatted-string')
+    # print(len(video_likes_count))
+    # print(video_likes_count)
 
     channel_data = driver.find_elements_by_css_selector(
         'ytd-video-secondary-info-renderer ytd-video-owner-renderer yt-formatted-string ')
@@ -94,20 +97,20 @@ print(channel_name_list)
 print(subscribers_count_list)
 print(view_count_list)
 
-# db = mysql.connector.connect(
-#   host="localhost",
-#   user="root",
-#   password="",
-#   database="trending"
-# )
+conn = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="",
+  database="trending"
+)
+cursor = conn.cursor()
+cursor.execute("ALTER DATABASE trending CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;")
+# cursor.execute("CREATE TABLE videos (title VARCHAR(1024), description TEXT, url VARCHAR(256), views VARCHAR(16))")
+cursor.execute("CREATE TABLE IF NOT EXISTS videos (title VARCHAR(1024) CHARACTER SET utf8 COLLATE utf8_unicode_ci, description TEXT CHARACTER SET utf8 COLLATE utf8_unicode_ci, url VARCHAR(256), views VARCHAR(16)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci")
+for i in range(len(video_title)):
+    sql = 'INSERT INTO videos VALUES ("' + video_title[i] + '", "' + description[i] + '",  "' + video_url[i] + '",  "' + view_count[i] + '")'
+    print(sql)
+    cursor.execute(sql) 
+    conn.commit()
 
-# cursor = db.cursor()
-
-# cursor.execute("CREATE TABLE videos (title VARCHAR(1024), description VARCHAR(4096), url VARCHAR(256), views VARCHAR(16))")
-# for i in range(len(video_title)):
-#     sql = 'INSERT INTO videos VALUES ("' + video_title[i] + '", "' + description[i] + '",  "' + video_url[i] + '",  "' + view_count[i] + '")'
-#     print(sql)
-#     cursor.execute(sql)
-#     db.commit()
-
-# print(cursor.rowcount, " was inserted.")
+print(cursor.rowcount, " was inserted.")

@@ -10,7 +10,7 @@
     <div class="container">
         <h1>Trending Videos</h1>
         <button class="ui right floated black button">Black</button>
-        <button class="ui right floated green button">Green</button>
+        <button class="ui right floated green button">Scrape</button>
         <div id="videos_here"> </div>
     </div>
 </section>
